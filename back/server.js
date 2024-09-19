@@ -1,5 +1,9 @@
 import express from 'express'
 import cors from 'cors'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+
 import {
 	start,
 	playAgain,
@@ -31,6 +35,26 @@ const functions = {
 const app = express()
 app.use(cors())
 const PORT = process.env.PORT || 3000
+const hostname = '0.0.0.0'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+console.log(__filename)
+console.log(__dirname)
+
+app.use(express.static(path.join(__dirname, '..', 'ui')))
+
+app.get('/', (req, res) => {
+	res.sendFile(path.join(__dirname, '..', 'ui', 'index.html'))
+})
+
+app.get('/core/constants.js', (req, res) => {
+	res.sendFile(path.join(__dirname, '..', 'core', 'constants.js'))
+})
+
+app.get('/core/state-manager.js', (req, res) => {
+	res.sendFile(path.join(__dirname, '..', 'core', 'state-manager.js'))
+})
 
 app.get('/events', (req, res) => {
 	res.setHeader('Content-Type', 'text/event-stream')
@@ -67,6 +91,6 @@ app.get('/:functionName', async (req, res) => {
 	}
 })
 
-app.listen(PORT, () => {
-	console.log(`Server is running on http://localhost:${PORT}`)
+app.listen(PORT, hostname, () => {
+	console.log(`Server is running on http://192.168.0.5:${PORT}`)
 })
